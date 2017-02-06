@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+    ethercalc:
+      image: audreyt/ethercalc
+      ports:
+        - "80:8000"
+      links:
+        - redis
+      restart: always
+      command: ["sh", "-c", "REDIS_HOST=redis pm2 start -x `which ethercalc` && pm2 logs"]
+      volumes:
+          - ./start.html:/usr/local/lib/node_modules/ethercalc/start.html
+          - ./start.js:/usr/local/lib/node_modules/ethercalc/static/start.js
+    redis:
+      image: redis:latest
+      volumes:
+        - /var/lib/redis:/data
+      command: redis-server --appendonly yes
+      restart: always
+      expose:
+          - "6379"
